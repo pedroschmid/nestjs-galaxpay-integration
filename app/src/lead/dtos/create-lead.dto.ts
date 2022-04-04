@@ -27,8 +27,8 @@ export class CreateLeadDTO {
   public email: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  public phone: number;
+  @IsString()
+  public phone: string;
 
   @IsNotEmpty()
   @IsString()
@@ -42,5 +42,6 @@ export class CreateLeadDTO {
   @IsEnum(EStatus)
   public status: EStatus;
 
+  @IsOptional()
   public address: CreateAddressDTO;
 }
