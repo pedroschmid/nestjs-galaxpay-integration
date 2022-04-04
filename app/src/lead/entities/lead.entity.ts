@@ -23,11 +23,11 @@ export class Lead implements ILeadEntity {
   @Column({ name: 'name' })
   public name: string;
 
-  @Column({ name: 'email' })
+  @Column({ name: 'email', unique: true })
   public email: string;
 
   @Column({ name: 'phone' })
-  public phone: number;
+  public phone: string;
 
   @Column({ name: 'identifier' })
   public identifier: string;
