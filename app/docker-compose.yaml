@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      target: development
+      dockerfile: docker/Dockerfile.development
+    command: yarn start:dev
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - integration-network
+    depends_on:
+      - mysql
+    env_file:
+      - .env
+
+  mysql:
+    container_name: mysql
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-volume:/var/lib/mysql
+    networks:
+      - integration-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=integration
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.8-management-alpine
+    ports:
+      - 5673:5672
+      - 15673:15672
+    networks:
+      - integration-network
+
+volumes:
+  mysql-volume:
+
+networks:
+  integration-network:
+    driver: bridge
