@@ -8,7 +8,7 @@ import { UpdateLeadDTO } from 'src/lead/dtos/update-lead.dto';
 export interface ILeadService {
   findAll(params: object): Promise<Lead[]>;
   findById(id: string): Promise<Lead>;
-  store(payload: CreateLeadDTO): Promise<Lead>;
+  store(payload: CreateLeadDTO): Promise<CreateLeadDTO>;
   update(id: string, payload: UpdateLeadDTO): Promise<UpdateResult>;
   destroy(id: string): Promise<DeleteResult>;
 }
