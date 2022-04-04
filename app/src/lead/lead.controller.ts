@@ -53,15 +53,13 @@ export class LeadController {
 
   @Post()
   public async store(@Body() payload: CreateLeadDTO): Promise<IApiResponse> {
-    const data: Lead = await this.leadService.store(payload);
+    const data: CreateLeadDTO = await this.leadService.store(payload);
     const message = 'Creating lead!';
-
-    const assignedPayload = Object.assign(payload, {
-      id: data.id,
-    }) as CreateLeadDTO;
-
+    
+    const assignedPayload = Object.assign(payload, { id: data.id }) as CreateLeadDTO;
+    
     this.rabbitMQClient.emit('store-client-galaxpay', assignedPayload);
-
+    
     return this.apiResponse({ status: HttpStatus.CREATED, message, data });
   }
 
