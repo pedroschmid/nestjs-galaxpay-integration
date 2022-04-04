@@ -11,7 +11,7 @@ export class CreateAddressDTO {
 
   @IsNotEmpty()
   @IsNumber()
-  number: number;
+  number: string;
 
   @IsNotEmpty()
   @IsString()
