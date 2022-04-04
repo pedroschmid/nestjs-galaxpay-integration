@@ -5,7 +5,7 @@ export interface ILeadEntity {
   id: string;
   name: string;
   email: string;
-  phone: number;
+  phone: string;
   identifier: string;
   subscriptionTier: ESubscriptionTier;
   status: EStatus;
