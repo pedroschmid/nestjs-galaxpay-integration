@@ -8,8 +8,8 @@ import {
   import { Address } from 'src/lead/entities/address.entity';
   
   import { IAddressRepository } from 'src/lead/interfaces/address-repository.interface';
-  import { CreateAddressDTO } from '../dtos/create-address.dto';
-  import { UpdateAddressDTO } from '../dtos/update-address.dto';
+  import { CreateAddressDTO } from 'src/lead/dtos/create-address.dto';
+  import { UpdateAddressDTO } from 'src/lead/dtos/update-address.dto';
   
   @EntityRepository(Address)
   export class AddressRepository
