@@ -2,6 +2,7 @@ const { GALAXPAY_URL }: NodeJS.ProcessEnv = process.env;
 
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { RmqContext } from '@nestjs/microservices';
 
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -23,7 +24,10 @@ export class GalaxpayService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  public async storeClient(payload: CreateLeadDTO) {
+  public async storeClient(
+    payload: CreateLeadDTO,
+    context: RmqContext,
+  ): Promise<void> {
     const url = `${this.url}/customers`;
     const data = this.prepareBody(payload);
     const headers = await this.prepareAccessToken();
@@ -34,7 +38,14 @@ export class GalaxpayService {
         .pipe(map((response) => response.data)),
     );
 
-    return response;
+    const channel = context.getChannelRef();
+    const originalMessage = context.getMessage();
+
+    if (response.type) {
+      channel.ack(originalMessage);
+    } else {
+      channel.nack(originalMessage, false, false)
+    }
   }
 
   private prepareBody(payload: CreateLeadDTO): CreateCustomerDTO {
