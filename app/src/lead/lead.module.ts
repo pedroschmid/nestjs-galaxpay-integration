@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HttpModule } from '@nestjs/axios';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { LeadRepository } from 'src/lead/repositories/lead.repository';
 import { LeadController } from 'src/lead/lead.controller';
@@ -14,18 +15,22 @@ import { GalaxpayService } from 'src/services/galaxpay/galaxpay.service';
   imports: [
     TypeOrmModule.forFeature([LeadRepository, AddressRepository]),
     HttpModule,
-    ClientsModule.register([
+    ClientsModule.registerAsync([
       {
         name: 'RABBITMQ_CLIENT',
-        transport: Transport.RMQ,
-        options: {
-          urls: ['amqp://rabbitmq:5672'],
-          queue: 'leads_queue',
-          noAck: true,
-          queueOptions: {
-            durable: false,
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (configService: ConfigService) => ({
+          transport: Transport.RMQ,
+          options: {
+            urls: [configService.get<string>('RABBITMQ_URL')],
+            queue: configService.get<string>('RABBITMQ_QUEUE_NAME'),
+            noAck: false,
+            queueOptions: {
+              durable: false,
+            },
           },
-        },
+        }),
       },
     ]),
   ],
