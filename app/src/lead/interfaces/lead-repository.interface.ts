@@ -6,9 +6,9 @@ import { CreateLeadDTO } from 'src/lead/dtos/create-lead.dto';
 import { UpdateLeadDTO } from 'src/lead/dtos/update-lead.dto';
 
 export interface ILeadRepository {
-  findAll(params: object): Promise<Lead[]>;
-  findById(id: string): Promise<Lead>;
-  store(payload: CreateLeadDTO): Promise<Lead>;
-  update(id: string, payload: UpdateLeadDTO): Promise<UpdateResult>;
-  destroy(id: string): Promise<DeleteResult>;
+  findAllLeads(params: object): Promise<Lead[]>;
+  findLeadById(id: string): Promise<Lead>;
+  storeLead(payload: CreateLeadDTO): Promise<Lead>;
+  updateLead(id: string, payload: UpdateLeadDTO): Promise<UpdateResult>;
+  destroyLead(id: string): Promise<DeleteResult>;
 }
