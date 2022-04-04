@@ -11,7 +11,13 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { ClientProxy, EventPattern } from '@nestjs/microservices';
+import {
+  ClientProxy,
+  Ctx,
+  EventPattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 
 import { DeleteResult, UpdateResult } from 'typeorm';
 
@@ -24,6 +30,7 @@ import { IApiResponse } from 'src/lead/interfaces/api-response.interface';
 
 import { CreateLeadDTO } from 'src/lead/dtos/create-lead.dto';
 import { UpdateLeadDTO } from 'src/lead/dtos/update-lead.dto';
+
 import { GalaxpayService } from 'src/services/galaxpay/galaxpay.service';
 
 @Controller('leads')
@@ -55,11 +62,13 @@ export class LeadController {
   public async store(@Body() payload: CreateLeadDTO): Promise<IApiResponse> {
     const data: CreateLeadDTO = await this.leadService.store(payload);
     const message = 'Creating lead!';
-    
-    const assignedPayload = Object.assign(payload, { id: data.id }) as CreateLeadDTO;
-    
+
+    const assignedPayload = Object.assign(payload, {
+      id: data.id,
+    }) as CreateLeadDTO;
+
     this.rabbitMQClient.emit('store-client-galaxpay', assignedPayload);
-    
+
     return this.apiResponse({ status: HttpStatus.CREATED, message, data });
   }
 
@@ -84,8 +93,11 @@ export class LeadController {
 
   // RABBITMQ
   @EventPattern('store-client-galaxpay')
-  public async storeClientGalaxpay(payload: CreateLeadDTO) {
-    await this.galaxpayService.storeClient(payload);
+  public async storeClientGalaxpay(
+    @Payload() payload: CreateLeadDTO,
+    @Ctx() context: RmqContext,
+  ) {
+    await this.galaxpayService.storeClient(payload, context);
   }
 
   private apiResponse({ status, message, data }: IApiResponse): IApiResponse {
